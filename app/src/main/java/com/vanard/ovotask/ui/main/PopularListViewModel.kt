@@ -1,8 +1,7 @@
 package com.vanard.ovotask.ui.main
 
-import androidx.lifecycle.LiveData
+import android.view.View
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.vanard.ovotask.base.BaseViewModel
 import com.vanard.ovotask.network.MovieDBAPI
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -10,21 +9,14 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class PageViewModel : BaseViewModel() {
+class PopularListViewModel : BaseViewModel() {
 
     @Inject
     lateinit var movieApi: MovieDBAPI
 
-    private val _index = MutableLiveData<Int>()
-    val text: LiveData<String> = Transformations.map(_index) {
-        "Hello world from section: $it"
-    }
-
-    fun setIndex(index: Int) {
-        _index.value = index
-    }
-
     private lateinit var subscription: Disposable
+
+    val loadingVisibility: MutableLiveData<Int> = MutableLiveData()
 
     init{
         loadPosts()
@@ -43,11 +35,11 @@ class PageViewModel : BaseViewModel() {
     }
 
     private fun onRetrievePostListStart(){
-
+        loadingVisibility.value = View.VISIBLE
     }
 
     private fun onRetrievePostListFinish(){
-
+        loadingVisibility.value = View.GONE
     }
 
     private fun onRetrievePostListSuccess(){
@@ -57,4 +49,10 @@ class PageViewModel : BaseViewModel() {
     private fun onRetrievePostListError(){
 
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        subscription.dispose()
+    }
+
 }
