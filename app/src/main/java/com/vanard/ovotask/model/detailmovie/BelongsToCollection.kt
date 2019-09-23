@@ -1,4 +1,4 @@
-package com.vanard.ovotask.model
+package com.vanard.ovotask.model.detailmovie
 
 data class BelongsToCollection(
 	val backdropPath: String? = null,
