@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -12,11 +13,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.vanard.ovotask.R
 import com.vanard.ovotask.databinding.FragmentTopRatedBinding
+import com.vanard.ovotask.injection.ViewModelFactory
 
 class TopRatedFragment : Fragment() {
 
     private lateinit var binding: FragmentTopRatedBinding
-    private lateinit var viewModel: TopRatedViewModel
+    private lateinit var viewModel: TopRatedListViewModel
     private var errorSnackbar: Snackbar? = null
 
     override fun onCreateView(
@@ -30,13 +32,13 @@ class TopRatedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(TopRatedViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, ViewModelFactory(requireActivity() as AppCompatActivity)).get(TopRatedListViewModel::class.java)
         viewModel.errorMessage.observe(this, Observer {
                 errorMessage -> if (errorMessage != null) showError(errorMessage) else hideError()
         })
         binding.viewModel = viewModel
 
-        binding.popularMovieList.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.topRatedMovieList.layoutManager = GridLayoutManager(requireContext(), 2)
     }
 
     private fun showError(errorMessage:String){

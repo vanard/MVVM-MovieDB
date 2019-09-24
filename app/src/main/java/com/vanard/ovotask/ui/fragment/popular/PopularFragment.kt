@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.vanard.ovotask.R
 import com.vanard.ovotask.databinding.FragmentPopularBinding
+import com.vanard.ovotask.injection.ViewModelFactory
 
 class PopularFragment : Fragment() {
     private lateinit var binding: FragmentPopularBinding
@@ -29,7 +31,7 @@ class PopularFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(PopularListViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, ViewModelFactory(requireActivity() as AppCompatActivity)).get(PopularListViewModel::class.java)
         viewModel.errorMessage.observe(this, Observer {
             errorMessage -> if (errorMessage != null) showError(errorMessage) else hideError()
         })

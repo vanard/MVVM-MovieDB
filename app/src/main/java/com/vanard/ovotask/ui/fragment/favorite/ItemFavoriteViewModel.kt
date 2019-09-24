@@ -1,4 +1,4 @@
-package com.vanard.ovotask.ui.fragment.item
+package com.vanard.ovotask.ui.fragment.favorite
 
 import android.content.Context
 import android.view.View
@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import com.vanard.ovotask.base.BaseViewModel
 import com.vanard.ovotask.data.database.db
 import com.vanard.ovotask.data.model.Favorite
-import com.vanard.ovotask.data.model.movie.MovieItem
 import com.vanard.ovotask.network.getPosterPath
 import com.vanard.ovotask.ui.activity.detail.DetailActivity
 import org.jetbrains.anko.db.classParser
@@ -15,40 +14,34 @@ import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.startActivity
 
-class MovieViewModel(context: Context) : BaseViewModel() {
+class ItemFavoriteViewModel(context: Context) : BaseViewModel() {
     private val movieThumbnail = MutableLiveData<String>()
     private val movieTitle = MutableLiveData<String>()
-    private val movieGenre = MutableLiveData<List<Int?>>()
     val movieFavorite = MutableLiveData<Boolean>()
-    private val movie = MutableLiveData<MovieItem>()
-    private val favList = mutableListOf<MovieItem>()
+    private val movie = MutableLiveData<Favorite>()
+    private val favList = mutableListOf<Favorite>()
 
     private val mCtx = context
 
-    fun bind(movies: MovieItem){
+    fun bind(movies: Favorite){
         movieThumbnail.value = getPosterPath(movies.poster_path)
         movieTitle.value = movies.title
-        movieGenre.value = movies.genre_ids
         movieFavorite.value = favList.contains(movies)
         movie.value = movies
 
         favoriteState(mCtx)
     }
 
-    fun getImageThumbnail():MutableLiveData<String>{
+    fun getImageThumbnail(): MutableLiveData<String> {
         return movieThumbnail
     }
 
-    fun getMovieTitle():MutableLiveData<String>{
+    fun getMovieTitle(): MutableLiveData<String> {
         return movieTitle
     }
 
-    fun getGenre():MutableLiveData<List<Int?>>{
-        return movieGenre
-    }
-
     fun onClickItem(view: View) {
-       view.context.startActivity<DetailActivity>("data" to movie.value)
+        view.context.startActivity<DetailActivity>("data" to movie.value)
     }
 
     private fun favoriteState(mCtx: Context){
@@ -72,7 +65,8 @@ class MovieViewModel(context: Context) : BaseViewModel() {
     private fun addToFav(context: Context) {
 
         context.db.use{
-            insert(Favorite.TABLE_FAV,
+            insert(
+                Favorite.TABLE_FAV,
                 Favorite.MOVIE_ID to movie.value!!.id,
                 Favorite.MOVIE_OVERVIEW to movie.value!!.overview,
                 Favorite.MOVIE_ORI_LANGUAGE to movie.value!!.original_language,
@@ -88,7 +82,8 @@ class MovieViewModel(context: Context) : BaseViewModel() {
 
     private fun removeFromFav(context: Context) {
         context.db.use{
-            delete(Favorite.TABLE_FAV, "(MOVIE_ID = {id})",
+            delete(
+                Favorite.TABLE_FAV, "(MOVIE_ID = {id})",
                 "id" to movie.value!!.id)
         }
     }

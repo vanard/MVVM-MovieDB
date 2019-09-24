@@ -1,4 +1,4 @@
-package com.vanard.ovotask.ui.fragment.popular
+package com.vanard.ovotask.ui.fragment.toprated
 
 import android.view.View
 import androidx.lifecycle.MutableLiveData
@@ -14,10 +14,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class PopularListViewModel(
+class TopRatedListViewModel(
     private val movieDao: MovieDao
 ) : BaseViewModel() {
-
     @Inject
     lateinit var movieApi: MovieDBAPI
 
@@ -26,8 +25,9 @@ class PopularListViewModel(
     val popularListAdapter: PopularListAdapter =
         PopularListAdapter()
     val loadingVisibility: MutableLiveData<Int> = MutableLiveData()
-    val errorMessage:MutableLiveData<String> = MutableLiveData()
+    val errorMessage: MutableLiveData<String> = MutableLiveData()
     val errorClickListener = View.OnClickListener { loadMovies() }
+
 
     init{
         loadMovies()
@@ -36,33 +36,33 @@ class PopularListViewModel(
     private fun loadMovies(){
         subscription =
             Observable.fromCallable { movieDao.all }
-            .concatMap {
-                    dbMovieList ->
-                if(dbMovieList.isEmpty())
-                    movieApi.getPopularMovies()
-                        .concatMap {
-                            apiMovieList -> movieDao.insertMovieList(apiMovieList.results as List<MovieItem>)
-                        Observable.just(apiMovieList)
-                    }
-                else
-                    Observable.just(dbMovieList)
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { onRetrievePostListStart() }
-            .doOnTerminate { onRetrievePostListFinish() }
-            .subscribe(
-                { result ->
-                    try {
-                        val res = result as MovieResponse
-                        onRetrievePostListSuccess(res.results)
-                    }catch (e: ClassCastException){
-                        val res = result as List<MovieItem>
-                        onRetrievePostListSuccess(res)
-                    }
-                 },
-                { error -> onRetrievePostListError(error.localizedMessage) }
-            )
+                .concatMap {
+                        dbMovieList ->
+                    if(dbMovieList.isEmpty())
+                        movieApi.getTopRatedMovies()
+                            .concatMap {
+                                    apiMovieList -> movieDao.insertMovieList(apiMovieList.results as List<MovieItem>)
+                                Observable.just(apiMovieList)
+                            }
+                    else
+                        Observable.just(dbMovieList)
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { onRetrievePostListStart() }
+                .doOnTerminate { onRetrievePostListFinish() }
+                .subscribe(
+                    { result ->
+                        try {
+                            val res = result as MovieResponse
+                            onRetrievePostListSuccess(res.results)
+                        }catch (e: ClassCastException){
+                            val res = result as List<MovieItem>
+                            onRetrievePostListSuccess(res)
+                        }
+                    },
+                    { error -> onRetrievePostListError(error.localizedMessage) }
+                )
     }
 
     private fun onRetrievePostListStart(){
@@ -86,5 +86,4 @@ class PopularListViewModel(
         super.onCleared()
         subscription.dispose()
     }
-
 }

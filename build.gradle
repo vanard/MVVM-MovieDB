@@ -8,6 +8,7 @@ buildscript {
     ext.glide_version = '4.9.0'
     ext.room_version = '2.2.0-rc01'
     ext.anko_version = '0.10.8'
+    ext.mockitoKotlinVersion = '2.2.0'
     repositories {
         google()
         jcenter()

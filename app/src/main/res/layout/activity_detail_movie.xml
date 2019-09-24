@@ -5,52 +5,57 @@
     <data>
         <variable
             name="viewModel"
-            type="com.vanard.ovotask.ui.main.DetailViewModel" />
+            type="com.vanard.ovotask.ui.activity.detail.DetailViewModel" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-        <com.google.android.material.appbar.AppBarLayout
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:elevation="4dp"
+        tools:targetApi="LOLLIPOP">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:contentScrim="@color/colorPrimary"
+            app:expandedTitleGravity="top|left"
+            app:expandedTitleTextAppearance="@style/CollapsedExpandedTitleText"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/movie_detail_poster"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                app:contentScrim="@color/colorPrimary"
-                app:title=" "
-                android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:imageUrl="@{viewModel.getBgThumbnail()}"
+                app:layout_collapseMode="parallax" />
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
-                    android:elevation="3dp"
-                    app:imageUrl="@{viewModel.getBgThumbnail()}"/>
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/detail_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Dark"/>
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-        </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/movie_detail_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:behavior_overlapTop="12dp"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingStart="24dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="24dp">
+                android:paddingEnd="16dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imageView"
@@ -68,13 +73,13 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imageView2"
                     app:layout_constraintStart_toEndOf="@+id/imageView2"
                     app:layout_constraintTop_toTopOf="@+id/imageView2"
-                    app:mutableTextDouble="@{viewModel.getVoteAvg()}" />
+                    app:mutableText="@{viewModel.getVoteAvg()}" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:mutableTextInt="@{viewModel.getVoteCount()}"
+                    app:mutableText="@{viewModel.getVoteCount()}"
                     android:layout_marginStart="4dp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView3"
                     app:layout_constraintStart_toEndOf="@+id/imageView3"
@@ -142,11 +147,12 @@
                     android:layout_height="24dp"
                     android:layout_marginTop="24dp"
                     android:onClick="@{(v) -> viewModel.onClickFavorite(v)}"
+                    app:favoriteState="@{viewModel.movieFavorite}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_favorite_heart_button" />
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/materialCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -180,7 +186,7 @@
                             android:layout_marginTop="8dp"
                             app:mutableText="@{viewModel.getOverview()}" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
-                </com.google.android.material.card.MaterialCardView>
+                </androidx.cardview.widget.CardView>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/textView5"
@@ -202,24 +208,37 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
+                    android:text="Trailers"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:text="Trailers"
-                    app:mutableVisibility="@{viewModel.getVisibility()}"
                     app:layout_constraintEnd_toEndOf="@+id/materialCardView"
                     app:layout_constraintStart_toStartOf="@+id/materialCardView"
-                    app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+                    app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                    app:mutableVisibility="@{viewModel.itemVisibility}" />
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6"
+                    app:mutableVisibility="@{viewModel.getLoadingVisibility()}" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/detail_body_recyclerView_trailers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
                     android:visibility="gone"
-                    app:mutableVisibility="@{viewModel.getVisibility()}"
+                    app:adapter="@{viewModel.videoListAdapter}"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView6"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:mutableVisibility="@{viewModel.itemVisibility}"
                     tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

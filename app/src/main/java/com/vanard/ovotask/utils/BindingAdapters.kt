@@ -48,20 +48,17 @@ fun setMutableTextInt(view: AppCompatTextView,  text: MutableLiveData<Int>?) {
 @BindingAdapter("genre")
 fun setGenre(view: AppCompatTextView,  text: MutableLiveData<List<Int>>) {
     val parentActivity:AppCompatActivity? = view.getParentActivity()
-    val gege = mutableListOf<Int>()
     if(parentActivity != null && text != null) {
         val genreIds = parentActivity.resources.getStringArray(R.array.genre_ids)
         val genre = parentActivity.resources.getStringArray(R.array.genre_names)
+        var genreItem = ""
         text.value?.forEachIndexed { index, i ->
             for (number in genreIds){
-                if (i.toString() == number) gege.add(index)
+                if (i.toString() == number) genreItem += "${genre[index]}, "
             }
         }
-        var textsu = ""
-        gege.forEach {
-            textsu += "${genre[it]},"
-        }
-        text.observe(parentActivity, Observer { value -> view.text = textsu})
+
+        text.observe(parentActivity, Observer { value -> view.text = genreItem.substring(0, genreItem.length-2)})
     }
 }
 
@@ -85,5 +82,16 @@ fun loadImage(view: AppCompatImageView, url: String?) {
         Glide.with(parentActivity)
             .load(url)
             .into(view)
+    }
+}
+
+@BindingAdapter("favoriteState")
+fun favoriteState(view: AppCompatImageView, state: MutableLiveData<Boolean>) {
+    val parentActivity: AppCompatActivity? = view.getParentActivity()
+    if (parentActivity != null) {
+        state.observe(parentActivity, Observer {
+            if (it) view.setImageResource(R.drawable.ic_favorite_heart)
+            else view.setImageResource(R.drawable.ic_favorite_heart_button)
+        })
     }
 }
